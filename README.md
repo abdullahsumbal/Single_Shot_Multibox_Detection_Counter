@@ -39,30 +39,85 @@ Please cite SSD in your publications if it helps your research:
     }
 
 ### Contents
-1. [Installation](#installation)
-2. [Preparation](#preparation)
-3. [Train/Eval](#traineval)
-4. [Models](#models)
+1. [Prerequisites](#Prerequisites)
+2. [Installation](#installation)
+3. [Bug Fixes](#bug fixes)
+4. [Preparation](#preparation)
+5. [Train/Eval](#traineval)
+6. [Models](#models)
+
+### Note: This is installation process is only tested on Ubuntu 16.04.  
+
+### Prerequisites
+1. python2.7 Ubuntu 16.04 comes with python2.7 installed.
+2. Install Protocol Buffers by google verison 2.6.1. Run the script given below.
+```Shell
+#! /bin/bash
+wget https://github.com/google/protobuf/releases/download/v2.6.1/protobuf-2.6.1.tar.gz
+tar xzf protobuf-2.6.1.tar.gz
+cd protobuf-2.6.1
+sudo apt-get update
+sudo apt-get install build-essential
+sudo ./configure
+sudo make
+sudo make check
+sudo make install
+sudo ldconfig
+protoc --version
+```
+Note: If you have protobuf already installed, please remove that isntalled version.
+
+3. Install anaconda for python2.7
+Steps can be found [here](https://conda.io/docs/user-guide/install/linux.html)
+
+4. Install the following following necessary libraries
+```Shell
+  sudo apt-get install libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
+  sudo apt-get install --no-install-recommends libboost-all-dev
+```
+
+5. Install python [opencv](https://pypi.org/project/opencv-python/) module
+
+6. Install python numpy module
+```Shell
+  pip install numpy
+```
 
 ### Installation
-1. Get the code. We will call the directory that you cloned Caffe into `$CAFFE_ROOT`
+1. Get the code. We will call the directory that you cloned Caffe into `$SDDC_ROOT`
   ```Shell
   git clone https://github.com/weiliu89/caffe.git
   cd caffe
   git checkout ssd
   ```
 
-2. Build the code. Please follow [Caffe instruction](http://caffe.berkeleyvision.org/installation.html) to install all necessary packages and build it.
+2. Install more python packets [Inspired from caffe](http://caffe.berkeleyvision.org/installation.html)
   ```Shell
-  # Modify Makefile.config according to your Caffe installation.
-  cp Makefile.config.example Makefile.config
-  make -j8
+  cd $HOME/python
+  for req in $(cat requirements.txt); do pip install $req; done
+  # Change $CAFFE_ROOT to the root directory location of repo
+  export PYTHONPATH="${PYTHONPATH}:$SDDC_ROOT/python"
+```
+
+3. Build the project
+  ```Shell
+  make all -j8
   # Make sure to include $CAFFE_ROOT/python to your PYTHONPATH.
   make py
   make test -j8
-  # (Optional)
+  # (Optional but very important to see everything is installed properly)
   make runtest -j8
+  make pytest -j8
   ```
+
+### Bug Fixes
+1. Common make all build fail issues can be found [here](https://github.com/BVLC/caffe/wiki/Commonly-encountered-build-issues).
+2. make py command requires numpy library. Make sure the numpy library location in the Makefile.config is correct.
+3. Make more the protobuf verison is 2.6.1. Can be checked by the following commands
+```Shell
+  protoc -version
+```
+4. For everything else google is your best friend. Most of these issues come from different envirnoment issues.
 
 ### Preparation
 1. Download [fully convolutional reduced (atrous) VGGNet](https://gist.github.com/weiliu89/2ed6e13bfd5b57cf81d6). By default, we assume the model is stored in `$CAFFE_ROOT/models/VGGNet/`
@@ -82,7 +137,7 @@ Please cite SSD in your publications if it helps your research:
 
 3. Create the LMDB file.
   ```Shell
-  cd $CAFFE_ROOT
+  cd $SDDC_ROOT
   # Create the trainval.txt, test.txt, and test_name_size.txt in data/VOC0712/
   ./data/VOC0712/create_list.sh
   # You can modify the parameters in create_data.sh if needed.
