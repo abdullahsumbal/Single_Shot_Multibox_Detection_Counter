@@ -97,7 +97,7 @@ Steps can be found [here](https://conda.io/docs/user-guide/install/linux.html)
   for req in $(cat requirements.txt); do pip install $req; done
   # Change $CAFFE_ROOT to the root directory location of repo
   export PYTHONPATH="${PYTHONPATH}:$SDDC_ROOT/python"
-```
+  ```
 
 3. Build the project
   ```Shell
