@@ -1,0 +1,54 @@
+{ "root_dir" : "/home/sumbal/Desktop/test_data",
+  "levels" : {
+    "difficult" : {
+      "run" : true,
+      "resolution" : {
+        "1920x1080" : {
+          "run" : true,
+          "images": {
+          "1.jpg" : {"run" : true, "nop" : 1},
+          "2.jpg" : {"run" : true, "nop" : 2},
+          "3.jpg" : {"run" : true, "nop" : 1},
+          "4.jpg" : {"run" : true, "nop" : 13},
+          "5.jpg" : {"run" : true, "nop" : 5},
+          "6.jpg" : {"run" : true, "nop" : 11},
+          "7.jpg" : {"run" : true, "nop" : 3},
+          "8.jpg" : {"run" : true, "nop" : 2},
+          "9.jpg" : {"run" : true, "nop" : 1},
+          "10.jpg" : {"run" : true, "nop" : 1}
+          }
+        },
+        "1280x720" : {
+          "run" : true,
+          "images": {
+            "1.jpg" : {"run" : true, "nop" : 1},
+            "2.jpg" : {"run" : true, "nop" : 2},
+            "3.jpg" : {"run" : true, "nop" : 1},
+            "4.jpg" : {"run" : true, "nop" : 13},
+            "5.jpg" : {"run" : true, "nop" : 5},
+            "6.jpg" : {"run" : true, "nop" : 11},
+            "7.jpg" : {"run" : true, "nop" : 3},
+            "8.jpg" : {"run" : true, "nop" : 2},
+            "9.jpg" : {"run" : true, "nop" : 1},
+            "10.jpg" : {"run" : true, "nop" : 1}
+          }
+        },
+        "320x240" : {
+          "run" : true,
+          "images": {
+            "1.jpg" : {"run" : true, "nop" : 1},
+            "2.jpg" : {"run" : true, "nop" : 2},
+            "3.jpg" : {"run" : true, "nop" : 1},
+            "4.jpg" : {"run" : true, "nop" : 13},
+            "5.jpg" : {"run" : true, "nop" : 5},
+            "6.jpg" : {"run" : true, "nop" : 11},
+            "7.jpg" : {"run" : true, "nop" : 3},
+            "8.jpg" : {"run" : true, "nop" : 2},
+            "9.jpg" : {"run" : true, "nop" : 1},
+            "10.jpg" : {"run" : true, "nop" : 1}
+          }
+        }
+      }
+    }
+  }
+}

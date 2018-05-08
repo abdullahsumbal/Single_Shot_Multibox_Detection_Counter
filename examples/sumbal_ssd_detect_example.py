@@ -1,5 +1,6 @@
 import os
 import sys
+os.environ['GLOG_minloglevel'] = '3'
 import caffe
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,7 +14,7 @@ plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
 
 # Make sure that caffe is on the python path:
-caffe_root = '/home/sumbal/Desktop/caffe/'  # this file is expected to be in {caffe_root}/examples
+caffe_root = '/home/sumbal/Desktop/Single_Shot_Multibox_Detection_Counter/'  # this file is expected to be in {caffe_root}/examples
 
 os.chdir(caffe_root)
 
@@ -62,7 +63,7 @@ transformer.set_channel_swap('data', (2, 1, 0))  # the reference model has chann
 image_resize = 300
 net.blobs['data'].reshape(1, 3, image_resize, image_resize)
 
-image = caffe.io.load_image('/home/sumbal/Desktop/test_data/chris_evan_simple.jpg')
+image = caffe.io.load_image('/home/sumbal/Desktop/test_data/easy/1920x1080/5.jpg')
 plt.imshow(image)
 
 transformed_image = transformer.preprocess('data', image)
@@ -92,9 +93,9 @@ top_ymax = det_ymax[top_indices]
 
 colors = plt.cm.hsv(np.linspace(0, 1, 21)).tolist()
 
-plt.imshow(image)
-currentAxis = plt.gca()
 
+currentAxis = plt.gca()
+print(top_conf.shape[0])
 for i in xrange(top_conf.shape[0]):
     xmin = int(round(top_xmin[i] * image.shape[1]))
     ymin = int(round(top_ymin[i] * image.shape[0]))
