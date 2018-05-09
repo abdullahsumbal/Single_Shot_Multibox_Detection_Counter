@@ -6,9 +6,16 @@ In this example, we will load a SSD model and use it to detect objects.
 
 import os
 import sys
+import json
+import glob
 import argparse
 import numpy as np
+from datetime import datetime
 from PIL import Image, ImageDraw
+
+# To hide the log
+os.environ['GLOG_minloglevel'] = '3'
+
 # Make sure that caffe is on the python path:
 caffe_root = '/home/sumbal/Desktop/Single_Shot_Multibox_Detection_Counter/'
 os.chdir(caffe_root)
@@ -105,29 +112,83 @@ class CaffeDetection:
             result.append([xmin, ymin, xmax, ymax, label, score, label_name])
         return result
 
+
 def main(args):
     '''main '''
     detection = CaffeDetection(args.gpu_id,
                                args.model_def, args.model_weights,
                                args.image_resize, args.labelmap_file)
-    result = detection.detect(args.image_file)
-    print result
 
-    img = Image.open(args.image_file)
-    draw = ImageDraw.Draw(img)
-    width, height = img.size
-    print width, height
-    for item in result:
-        xmin = int(round(item[0] * width))
-        ymin = int(round(item[1] * height))
-        xmax = int(round(item[2] * width))
-        ymax = int(round(item[3] * height))
-        draw.rectangle([xmin, ymin, xmax, ymax], outline=(255, 0, 0))
-        draw.text([xmin, ymin], item[-1] + str(item[-2]), (0, 0, 255))
-        print item
-        print item[-1]
-        print [xmin, ymin], item[-1]
-    img.save('detect_result.jpg')
+    # Set up : TODO
+
+    # Iterate images
+    with open(args.test_bulk) as f:
+        config_data = json.load(f)
+        images_dir = str(config_data['root_dir'])
+        levels = config_data['levels']
+        # Iterate all levels
+        for level_key, level_value in levels.iteritems():
+
+            if level_value['run'] == False:
+                print 'Skipping level: ', str(level_key)
+                continue
+            print 'Testing level: ', str(level_key)
+            level_dir = images_dir + '/' + str(level_key)
+
+            # iterate all resolution in each level
+            for resolution_key, resolution_value in level_value['resolution'].iteritems():
+                if resolution_value['run'] == False:
+                    print 'Skipping resolution: ', str(resolution_key)
+                    continue
+                print 'Testing resolution: ', str(resolution_key)
+                resolution_dir = level_dir + '/' + str(resolution_key)
+
+                for image_name, image_value in resolution_value['images'].iteritems():
+                    if image_value['run'] == False:
+                        print 'Skipping image: ', str(image_name)
+                        continue
+                    print 'Testing image: ', str(image_name)
+                    image_path = resolution_dir + '/' + str(image_name)
+
+                    start = datetime.now()
+                    result = detection.detect(image_path)
+                    runtime = (datetime.now() - start).total_seconds()
+                    img = Image.open(image_path)
+                    draw = ImageDraw.Draw(img)
+                    width, height = img.size
+                    total_confidence = 0
+                    accuracy = 0
+                    avg_confidence = 0
+                    actual_nop = 0
+                    for item in result:
+                        xmin = int(round(item[0] * width))
+                        ymin = int(round(item[1] * height))
+                        xmax = int(round(item[2] * width))
+                        ymax = int(round(item[3] * height))
+                        draw.rectangle([xmin, ymin, xmax, ymax], outline=(255, 0, 0))
+                        draw.text([xmin, ymin], item[-1] + str(item[-2]) +" runtime: " + str(runtime), (0, 0, 255))
+                        # Count people and Sum confidence of person
+                        if item[-1] == 'person':
+                            total_confidence += item[-2]
+                            actual_nop += 1
+                    img.save(resolution_dir+'/output/'+image_name)
+                    expected_nop = float(image_value['nop'])
+                    accuracy = actual_nop / expected_nop
+                    # Prevent zero error.
+                    if actual_nop != 0:
+                        avg_confidence = (total_confidence / actual_nop)
+                    # write data to file
+                    with open(resolution_dir+'/output/results.txt', 'a') as results_file:
+                        string = "{},{},{},{},{},{}\n".format(
+                            image_name,
+                            str(runtime),
+                            str(actual_nop),
+                            str(expected_nop),
+                            str(accuracy),
+                            str(avg_confidence)
+                        )
+                        results_file.write(string)
+                    results_file.close()
 
 
 def parse_args():
@@ -143,7 +204,9 @@ def parse_args():
                         default='models/VGGNet/VOC0712/SSD_300x300/'
                         'VGG_VOC0712_SSD_300x300_iter_120000.caffemodel')
     parser.add_argument('--image_file', default='examples/images/fish-bike.jpg')
+    parser.add_argument('--test_bulk', default='config/test_config_easy.json')
     return parser.parse_args()
+
 
 if __name__ == '__main__':
     main(parse_args())

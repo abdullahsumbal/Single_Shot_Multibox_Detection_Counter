@@ -7,8 +7,11 @@ In this example, we will load a SSD model and use it to detect objects.
 import os
 import sys
 import json
+import glob
 import argparse
 import numpy as np
+from os import listdir
+from os.path import isfile, join
 from datetime import datetime
 from PIL import Image, ImageDraw
 
@@ -118,6 +121,7 @@ def main(args):
                                args.model_def, args.model_weights,
                                args.image_resize, args.labelmap_file)
 
+    print(glob.glob(args.test_bulk))
     # Set up : TODO
 
     # Iterate images
@@ -141,53 +145,93 @@ def main(args):
                     continue
                 print 'Testing resolution: ', str(resolution_key)
                 resolution_dir = level_dir + '/' + str(resolution_key)
+                os.chdir(resolution_dir)
+                # Iterate all images
+                for counter, image_name in enumerate(listdir(resolution_dir)):
+                    if isfile(join(resolution_dir, image_name)) and '.jpg' in image_name:
+                        # Make a file to keep record of data for each image file
+                        output_dir = join(resolution_dir, 'output')
+                        if not os.path.exists(output_dir):
+                            os.makedirs(output_dir)
+                        image_data = open(join(output_dir, image_name + '_data'), "a")
+                        image_path = join(resolution_dir, image_name)
+                        # Start detection
+                        start = datetime.now()
+                        print(image_path)
+                        result = detection.detect(image_path)
+                        # End detection
+                        runtime = (datetime.now() - start).total_seconds()
+                        img = Image.open(image_path)
+                        draw = ImageDraw.Draw(img)
+                        width, height = img.size
 
-                for image_name, image_value in resolution_value['images'].iteritems():
-                    if image_value['run'] == False:
-                        print 'Skipping image: ', str(image_name)
-                        continue
-                    print 'Testing image: ', str(image_name)
-                    image_path = resolution_dir + '/' + str(image_name)
+                        # Setting up variables.
+                        total_confidence_person = 0
+                        total_confidence_dog = 0
+                        total_confidence_bicycle = 0
+                        avg_confidence_person = 0
+                        avg_confidence_bicycle = 0
+                        avg_confidence_dog = 0
+                        ssd_detected_person = 0
+                        ssd_detected_dog = 0
+                        ssd_detected_bicycle = 0
+                        object_counter = 0
 
-                    start = datetime.now()
-                    result = detection.detect(image_path)
-                    runtime = (datetime.now() - start).total_seconds()
-                    img = Image.open(image_path)
-                    draw = ImageDraw.Draw(img)
-                    width, height = img.size
-                    total_confidence = 0
-                    accuracy = 0
-                    avg_confidence = 0
-                    actual_nop = 0
-                    for item in result:
-                        xmin = int(round(item[0] * width))
-                        ymin = int(round(item[1] * height))
-                        xmax = int(round(item[2] * width))
-                        ymax = int(round(item[3] * height))
-                        draw.rectangle([xmin, ymin, xmax, ymax], outline=(255, 0, 0))
-                        draw.text([xmin, ymin], item[-1] + str(item[-2]) +" runtime: " + str(runtime), (0, 0, 255))
-                        # Count people and Sum confidence of person
-                        if item[-1] == 'person':
-                            total_confidence += item[-2]
-                            actual_nop += 1
-                    img.save(resolution_dir+'/output/'+image_name)
-                    expected_nop = float(image_value['nop'])
-                    accuracy = actual_nop / expected_nop
-                    # Prevent zero error.
-                    if actual_nop != 0:
-                        avg_confidence = (total_confidence / actual_nop)
-                    # write data to file
-                    with open(resolution_dir+'/output/results.txt', 'a') as results_file:
-                        string = "{},{},{},{},{},{}\n".format(
-                            image_name,
-                            str(runtime),
-                            str(actual_nop),
-                            str(expected_nop),
-                            str(accuracy),
-                            str(avg_confidence)
-                        )
-                        results_file.write(string)
-                    results_file.close()
+                        for item in result:
+                            xmin = int(round(item[0] * width))
+                            ymin = int(round(item[1] * height))
+                            xmax = int(round(item[2] * width))
+                            ymax = int(round(item[3] * height))
+                            draw.rectangle([xmin, ymin, xmax, ymax], outline=(255, 0, 0))
+                            draw.text([xmin, ymin], item[-1] + str(item[-2]) +" runtime: " + str(runtime), (0, 0, 255))
+                            # Record data for each image
+                            # Count people and Sum confidence of person
+                            if item[-1] == 'person':
+                                object_counter += 1
+                                total_confidence_person += item[-2]
+                                ssd_detected_person += 1
+                                image_data.write('object {}: {} \n'.format(object_counter, item[-1]))
+                                image_data.write('confidence : {}\n'.format(str(item[-2])))
+                                image_data.write('xmin={},ymin={},xmax={},ymax={} \n'.format(xmin, ymin, xmax, ymax))
+                            # Count dogs and Sum confidence of dog
+                            if item[-1] == 'dog':
+                                object_counter += 1
+                                total_confidence_dog += item[-2]
+                                ssd_detected_dog += 1
+                                image_data.write('object {}: {} \n'.format(object_counter, item[-1]))
+                                image_data.write('confidence : {}\n'.format(str(item[-2])))
+                                image_data.write('xmin={},ymin={},xmax={},ymax={} \n'.format(xmin, ymin, xmax, ymax))
+                            # Count dogs and Sum confidence of dog
+                            if item[-1] == 'bicycle':
+                                object_counter += 1
+                                total_confidence_bicycle += item[-2]
+                                ssd_detected_bicycle += 1
+                                image_data.write('object {}: {} \n'.format(object_counter, item[-1]))
+                                image_data.write('confidence : {}\n'.format(str(item[-2])))
+                                image_data.write('xmin={},ymin={},xmax={},ymax={} \n'.format(xmin, ymin, xmax, ymax))
+                        image_data.write('runtime : {}\n'.format(runtime))
+                        img.save(resolution_dir+'/output/' + image_name)
+                        # Prevent zero error.
+                        if ssd_detected_person != 0:
+                            avg_confidence_person = (total_confidence_person / ssd_detected_person)
+                        if ssd_detected_dog != 0:
+                            avg_confidence_dog = (total_confidence_dog / ssd_detected_dog)
+                        if ssd_detected_bicycle != 0:
+                            avg_confidence_bicycle = (total_confidence_bicycle / ssd_detected_bicycle)
+                        # write data to file
+                        with open(resolution_dir+'/output/results.txt', 'a') as results_file:
+                            string = "{},{},{},{},{},{},{},{}\n".format(
+                                image_name,
+                                str(runtime),
+                                str(ssd_detected_person),
+                                str(ssd_detected_dog),
+                                str(ssd_detected_bicycle),
+                                str(avg_confidence_person),
+                                str(avg_confidence_dog),
+                                str(avg_confidence_bicycle)
+                            )
+                            results_file.write(string)
+                        results_file.close()
 
 
 def parse_args():
@@ -203,7 +247,7 @@ def parse_args():
                         default='models/VGGNet/VOC0712/SSD_300x300/'
                         'VGG_VOC0712_SSD_300x300_iter_120000.caffemodel')
     parser.add_argument('--image_file', default='examples/images/fish-bike.jpg')
-    parser.add_argument('--test_bulk', default='config/test_config_difficult.json')
+    parser.add_argument('--test_bulk', default='config/test_config_v2.json')
     return parser.parse_args()
 
 

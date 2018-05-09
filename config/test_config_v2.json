@@ -1,0 +1,18 @@
+{ "root_dir" : "/home/sumbal/Desktop/pedestrain_walking_data",
+  "levels" : {
+    "easy" : {
+      "run" : true,
+      "resolution" : {
+        "1920x1080" : {
+          "run" : true
+        },
+        "1280x720" : {
+          "run" : true
+        },
+        "320x240" : {
+          "run" : true
+        }
+      }
+    }
+  }
+}
