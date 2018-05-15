@@ -67,18 +67,22 @@ protoc --version
 ```
 Note: If you have protobuf already installed, please remove that isntalled version.
 
-3. Install anaconda for python2.7
-Steps can be found [here](https://conda.io/docs/user-guide/install/linux.html)
+3. Install anaconda for python2.7 
+Steps can be found [here](https://conda.io/docs/user-guide/install/linux.html) \
+Add anaconda to path (I am assuming anaconda is installed in Home directory)
+```Shell
+    export PATH=~/anaconda2/bin:$PATH
+```
 
 4. Install the following following necessary libraries
 ```Shell
-  sudo apt-get install libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
+  sudo apt-get install liblmdb-dev libgoogle-glog-dev libgflags-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
   sudo apt-get install --no-install-recommends libboost-all-dev
 ```
 
 5. Install python [opencv](https://pypi.org/project/opencv-python/) module
 
-6. Install python numpy module
+6. Install python numpy module (This should be installed with Anaconda)
 ```Shell
   pip install numpy
 ```
