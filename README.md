@@ -51,41 +51,45 @@ Please cite SSD in your publications if it helps your research:
 ### Prerequisites
 1. python2.7 Ubuntu 16.04 comes with python2.7 installed.
 2. Install Protocol Buffers by google verison 2.6.1. Run the script given below.
-```Shell
-#! /bin/bash
-wget https://github.com/google/protobuf/releases/download/v2.6.1/protobuf-2.6.1.tar.gz
-tar xzf protobuf-2.6.1.tar.gz
-cd protobuf-2.6.1
-sudo apt-get update
-sudo apt-get install build-essential
-sudo ./configure
-sudo make
-sudo make check
-sudo make install
-sudo ldconfig
-protoc --version
-```
-Note: If you have protobuf already installed, please remove that isntalled version.
+    ```Shell
+    #! /bin/bash
+    wget https://github.com/google/protobuf/releases/download/v2.6.1/protobuf-2.6.1.tar.gz
+    tar xzf protobuf-2.6.1.tar.gz
+    cd protobuf-2.6.1
+    sudo apt-get update
+    sudo apt-get install build-essential
+    sudo ./configure
+    sudo make
+    sudo make check
+    sudo make install
+    sudo ldconfig
+    protoc --version
+    ```
+    Note: If you have protobuf already installed, please remove that isntalled version.
 
 3. Install anaconda for python2.7 
 Steps can be found [here](https://conda.io/docs/user-guide/install/linux.html) \
 Add anaconda to path (I am assuming anaconda is installed in Home directory)
-```Shell
-    export PATH=~/anaconda2/bin:$PATH
-```
+    ```Shell
+        export PATH=~/anaconda2/bin:$PATH
+    ```
 
 4. Install the following following necessary libraries
-```Shell
-  sudo apt-get install liblmdb-dev libgoogle-glog-dev libgflags-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
-  sudo apt-get install --no-install-recommends libboost-all-dev
-```
+    ```Shell
+      sudo apt-get install liblmdb-dev libgoogle-glog-dev libgflags-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
+      sudo apt-get install --no-install-recommends libboost-all-dev
+    ```
 
 5. Install python [opencv](https://pypi.org/project/opencv-python/) module
 
 6. Install python numpy module (This should be installed with Anaconda)
-```Shell
-  pip install numpy
-```
+    ```Shell
+      pip install numpy
+    ```
+7. Only for GPU use \
+    Install the latest Nvidia drivers. First Check if your GPU is comptable with the latest drivers. \
+    Install [CUDA toolkit](https://developer.nvidia.com/cuda-downloads) \
+    Install [cuDNN](https://docs.nvidia.com/deeplearning/sdk/cudnn-install/)
 
 ### Installation
 1. Get the code. We will call the directory that you cloned Caffe into `$SDDC_ROOT`
@@ -118,9 +122,9 @@ Add anaconda to path (I am assuming anaconda is installed in Home directory)
 1. Common make all build fail issues can be found [here](https://github.com/BVLC/caffe/wiki/Commonly-encountered-build-issues).
 2. make py command requires numpy library. Make sure the numpy library location in the Makefile.config is correct.
 3. Make more the protobuf verison is 2.6.1. Can be checked by the following commands
-```Shell
-  protoc -version
-```
+    ```Shell
+      protoc -version
+    ```
 4. For everything else google is your best friend. Most of these issues come from different envirnoment issues.
 
 ### Preparation
