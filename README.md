@@ -76,7 +76,7 @@ Add anaconda to path (I am assuming anaconda is installed in Home directory)
 
 4. Install the following following necessary libraries
     ```Shell
-      sudo apt-get install liblmdb-dev libgoogle-glog-dev libgflags-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
+      sudo apt-get install libopenblas-dev liblmdb-dev libgoogle-glog-dev libgflags-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
       sudo apt-get install --no-install-recommends libboost-all-dev
     ```
 
