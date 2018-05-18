@@ -88,7 +88,7 @@ Add anaconda to path (I am assuming anaconda is installed in Home directory)
     ```
 7. Only for GPU use \
     Install the latest Nvidia drivers. First Check if your GPU is comptable with the latest drivers. \
-    Install [CUDA toolkit](https://developer.nvidia.com/cuda-downloads) \
+    (edit)Install [CUDA toolkit](https://developer.nvidia.com/cuda-downloads) 8.0.  \
     Install [cuDNN](https://docs.nvidia.com/deeplearning/sdk/cudnn-install/)
 
 ### Installation

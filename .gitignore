@@ -99,3 +99,7 @@ MANIFEST-*
 jobs
 temp
 examples/*/*lmdb
+
+# images and videos
+*.mp4
+*.jpg

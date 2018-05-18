@@ -1,6 +1,7 @@
 #include "caffe/common.hpp"
 #include "caffe/syncedmem.hpp"
 #include "caffe/util/math_functions.hpp"
+#include <glog/logging.h>
 
 namespace caffe {
 
@@ -61,6 +62,15 @@ inline void SyncedMemory::to_gpu() {
   case HEAD_AT_CPU:
     if (gpu_ptr_ == NULL) {
       CUDA_CHECK(cudaGetDevice(&gpu_device_));
+//
+    std::cout << "Memory need is " << size_ << "\n";
+    std::cout << "GPU is " << gpu_ptr_ << "\n";
+    size_t free_byte;
+    size_t total_byte;
+    cudaMemGetInfo(&free_byte, &total_byte);
+    std::cout << "Total byte is " << total_byte << "\n";
+    std::cout << "Free byte is " << free_byte << "\n";
+//
       CUDA_CHECK(cudaMalloc(&gpu_ptr_, size_));
       own_gpu_data_ = true;
     }

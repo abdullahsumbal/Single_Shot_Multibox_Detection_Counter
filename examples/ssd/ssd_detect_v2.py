@@ -45,8 +45,8 @@ def get_labelname(labelmap, labels):
 
 class CaffeDetection:
     def __init__(self, gpu_id, model_def, model_weights, image_resize, labelmap_file):
-        # caffe.set_device(gpu_id)
-        # caffe.set_mode_gpu()
+        caffe.set_device(gpu_id)
+        caffe.set_mode_gpu()
 
         self.image_resize = image_resize
         # Load the net in the test phase for inference, and configure input preprocessing.
